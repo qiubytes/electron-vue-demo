@@ -1,8 +1,11 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
-const api = {}
+const api = {
+  saveFile: (content): Promise<boolean> => ipcRenderer.invoke('savefile', content), //这里声明的api  发送消息给主进程  （实现）
+  readfile: (): Promise<boolean> => ipcRenderer.invoke('readfile'),
+}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

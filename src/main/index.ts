@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import fs from 'fs/promises';
 
 function createWindow(): void {
   // Create the browser window.
@@ -51,6 +52,25 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+  // 写入文件 ipc
+  ipcMain.handle("savefile", async (_, data): Promise<boolean> => {
+    const savePath: string = 'D://my-app-data.txt';
+    try {
+      await fs.writeFile(savePath, data, 'utf-8');
+      return true;
+    } catch {
+      return false;
+    }
+  });
+  //读取文件内容 ipc
+  ipcMain.handle('readfile', async (_): Promise<string> => {
+    const filePath: string = 'D://my-app-data.txt';
+    try {
+      return await fs.readFile(filePath, 'utf-8');
+    } catch {
+      return "";
+    }
+  });
 
   createWindow()
 
